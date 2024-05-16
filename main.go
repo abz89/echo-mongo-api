@@ -7,7 +7,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Adapted from this article https://dev.to/hackmamba/build-a-rest-api-with-golang-and-mongodb-echo-version-2gdg (https://github.com/Mr-Malomz/echo-mongo-api)
 func main() {
 	e := echo.New()
 

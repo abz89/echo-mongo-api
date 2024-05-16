@@ -49,6 +49,31 @@ func CreateUser(c echo.Context) error {
 	return c.JSON(http.StatusCreated, responses.UserResponse{Status: http.StatusCreated, Message: "success", Data: &echo.Map{"data": result}})
 }
 
+func ListUsers(c echo.Context) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	var users []models.User
+	defer cancel()
+
+	results, err := userCollection.Find(ctx, bson.M{})
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
+	}
+
+	// reading from the db in an optimal way
+	defer results.Close(ctx)
+	for results.Next(ctx) {
+		var user models.User
+		if err = results.Decode(&user); err != nil {
+			return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
+		}
+
+		users = append(users, user)
+	}
+
+	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": users}})
+}
+
 func GetUser(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	userId := c.Param("userId")
@@ -105,6 +130,10 @@ func EditUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": updatedUser}})
 }
 
+func PatchUser(c echo.Context) error {
+	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": "patch method is not implemented yet."}})
+}
+
 func DeleteUser(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	userId := c.Param("userId")
@@ -124,29 +153,4 @@ func DeleteUser(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": "user deleted"}})
 
-}
-
-func ListUsers(c echo.Context) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	var users []models.User
-	defer cancel()
-
-	results, err := userCollection.Find(ctx, bson.M{})
-
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
-	}
-
-	// reading from the db in an optimal way
-	defer results.Close(ctx)
-	for results.Next(ctx) {
-		var user models.User
-		if err = results.Decode(&user); err != nil {
-			return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
-		}
-
-		users = append(users, user)
-	}
-
-	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": users}})
 }
