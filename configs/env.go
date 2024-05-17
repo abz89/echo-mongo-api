@@ -6,11 +6,12 @@ import (
 	"os"
 )
 
-func EnvMongoURI() string {
+func GoDotEnvVarible(key string) string {
 	err := godotenv.Load()
+
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	return os.Getenv("MONGO_URI")
+	return os.Getenv(key)
 }

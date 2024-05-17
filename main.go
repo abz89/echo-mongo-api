@@ -20,5 +20,5 @@ func main() {
 		return c.JSON(200, &echo.Map{"message": "Hello World!"})
 	})
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + configs.GoDotEnvVarible("PORT")))
 }
