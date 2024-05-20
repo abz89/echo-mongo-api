@@ -5,6 +5,7 @@ import (
 	"echo-mongo-api/configs"
 	"echo-mongo-api/models"
 	"echo-mongo-api/responses"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -131,7 +132,55 @@ func EditUser(c echo.Context) error {
 }
 
 func PatchUser(c echo.Context) error {
-	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": "patch method is not implemented yet."}})
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	userId := c.Param("userId")
+	var user models.User
+	defer cancel()
+
+	objectId, _ := primitive.ObjectIDFromHex(userId)
+
+	err := userCollection.FindOne(ctx, bson.M{"id": objectId}).Decode(&user)
+
+	fmt.Printf("User struct: %+v\n", user)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
+	}
+
+	var patch map[string]interface{}
+	if err := c.Bind(&patch); err != nil {
+		return c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: &echo.Map{"data": err.Error()}})
+	}
+
+	// Merge the fields from the request into the existing document
+	for key, value := range patch {
+		switch key {
+		case "name":
+			user.Name = value.(string)
+		case "location":
+			user.Location = value.(string)
+		case "title":
+			user.Title = value.(string)
+		}
+	}
+
+	result, err := userCollection.UpdateOne(ctx, bson.M{"id": objectId}, bson.M{"$set": user})
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
+	}
+
+	// get patched user details
+	var patchedUser models.User
+	if result.MatchedCount == 1 {
+		err := userCollection.FindOne(ctx, bson.M{"id": objectId}).Decode(&patchedUser)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
+		}
+	}
+
+	return c.JSON(http.StatusOK, responses.UserResponse{Status: http.StatusOK, Message: "success", Data: &echo.Map{"data": patchedUser}})
 }
 
 func DeleteUser(c echo.Context) error {
