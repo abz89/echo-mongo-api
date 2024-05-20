@@ -5,7 +5,6 @@ import (
 	"echo-mongo-api/configs"
 	"echo-mongo-api/models"
 	"echo-mongo-api/responses"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -140,8 +139,6 @@ func PatchUser(c echo.Context) error {
 	objectId, _ := primitive.ObjectIDFromHex(userId)
 
 	err := userCollection.FindOne(ctx, bson.M{"id": objectId}).Decode(&user)
-
-	fmt.Printf("User struct: %+v\n", user)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &echo.Map{"data": err.Error()}})
