@@ -5,6 +5,7 @@ import (
 	"echo-mongo-api/routes"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -12,6 +13,10 @@ func main() {
 
 	// run database
 	configs.ConnectDB()
+
+	// middlewares
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
 	// routes
 	routes.UserRoute(e)
