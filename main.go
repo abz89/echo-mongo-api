@@ -11,19 +11,22 @@ import (
 func main() {
 	e := echo.New()
 
-	// run database
+	// Connect database
 	configs.ConnectDB()
 
-	// middlewares
+	// Middlewares
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	// routes
+	// Routes
+	routes.AuthRoute(e)
 	routes.UserRoute(e)
 
+	// Test route
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(200, &echo.Map{"message": "Hello World!"})
 	})
 
-	e.Logger.Fatal(e.Start(":" + configs.GoDotEnvVarible("PORT")))
+	// Start web server
+	e.Logger.Fatal(e.Start(":" + configs.GoDotEnvVariable("PORT")))
 }

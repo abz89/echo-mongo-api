@@ -1,12 +1,14 @@
 package configs
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
-func GoDotEnvVarible(key string) string {
+// Get env variable value by key
+func GoDotEnvVariable(key string) string {
 	err := godotenv.Load()
 
 	if err != nil {
