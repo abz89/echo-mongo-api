@@ -31,8 +31,11 @@ go mod tidy
 4. Adjust `.env` file int the project root directory and add the following configuration
 
 ```bash
-PORT=8080
-MONGO_URI=<YOUR-MONGODB-URI>
+PORT=<APP PORT>
+MONGO_URI=<MONGODB URI>
+SECRET=<JWT SECRET>
+ADMIN_USER=<ADMINISTRATOR USERNAME>
+ADMIN_PASSWORD=<ADMINISTRATOR PASSWORD>
 ```
 
 5. Run the application
@@ -43,12 +46,14 @@ go run main.go
 
 ## API Endpoints
 
-- `POST /users`: Create a new users
-- `GET /users`: Get all users
-- `GET /users/:userId`: Get a user by ID
-- `PUT /users/:userId`: Update a user by ID
-- `PATCH /users/:userId`: Update (partially) a user by ID
-- `DELETE /users/userId`: Delete a user by ID
+- `POST /register`: Register a new user
+- `POST /login`: Login a user for obtaining JWT token
+- `POST /users`: Same as `POST /register`
+- `GET /users`: Get all users (protected by basic auth)
+- `GET /users/:userId`: Get a user by ID (protected by JWT auth)
+- `PUT /users/:userId`: Update a user by ID (protected by JWT auth)
+- `PATCH /users/:userId`: Update (partially) a user by ID (protected by JWT auth)
+- `DELETE /users/userId`: Delete a user by ID (protected by JWT auth)
 
 ## Contributing
 

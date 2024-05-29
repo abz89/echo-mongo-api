@@ -22,7 +22,7 @@ func UserRoute(e *echo.Echo) {
 
 // function for basic auth
 func checkBasicAuth(username, password string, _ echo.Context) (bool, error) {
-	if username == "admin" && password == "admin" {
+	if username == configs.GoDotEnvVariable("ADMIN_USER") && password == configs.GoDotEnvVariable("ADMIN_PASSWORD") {
 		return true, nil
 	}
 
