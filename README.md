@@ -50,10 +50,10 @@ go run main.go
 - `POST /login`: Login a user for obtaining JWT token
 - `POST /users`: Same as `POST /register`
 - `GET /users`: Get all users (protected by basic auth)
-- `GET /users/:userId`: Get a user by ID (protected by JWT auth)
-- `PUT /users/:userId`: Update a user by ID (protected by JWT auth)
-- `PATCH /users/:userId`: Update (partially) a user by ID (protected by JWT auth)
-- `DELETE /users/userId`: Delete a user by ID (protected by JWT auth)
+- `GET /users/:userId`: Get a user by ID (protected by JWT auth & guarded by matching userId)
+- `PUT /users/:userId`: Update a user by ID (protected by JWT auth & guarded by matching userId)
+- `PATCH /users/:userId`: Update (partially) a user by ID (protected by JWT auth & guarded by matching userId)
+- `DELETE /users/userId`: Delete a user by ID (protected by JWT auth & guarded by matching userId)
 
 ## Contributing
 
